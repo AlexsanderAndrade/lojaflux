@@ -4,6 +4,8 @@ Sistema web de gestão para pequenos comércios, inspirado em desafios observado
 
 > Projeto de portfólio. Todos os nomes, valores e registros da demonstração são fictícios.
 
+![Dashboard do LojaFlux](docs/dashboard.png)
+
 ## Problema de negócio
 
 Quando compras, vendas e estoque são controlados separadamente, o responsável pela loja perde tempo conciliando informações e pode tomar decisões com dados desatualizados. O LojaFlux centraliza esses eventos e mantém o estoque sincronizado a cada operação.
@@ -31,6 +33,27 @@ Quando compras, vendas e estoque são controlados separadamente, o responsável 
 ## Tecnologias
 
 Python 3.12, Flask, SQLAlchemy, SQLite, Jinja2, HTML, CSS, JavaScript e Pytest.
+
+## O que este projeto demonstra
+
+- tradução de um problema cotidiano em requisitos de produto;
+- separação entre interface, regras de negócio e persistência;
+- modelagem de compras, vendas, itens e movimentações;
+- consistência transacional e preservação do histórico;
+- testes orientados ao comportamento esperado;
+- comunicação visual de indicadores para pessoas não técnicas.
+
+## Estrutura principal
+
+```text
+app/
+├── models.py       # entidades e relacionamentos
+├── services.py     # regras transacionais de compra e venda
+├── routes.py       # páginas e endpoints JSON
+├── templates/      # interface renderizada no servidor
+└── static/         # estilos e interação no navegador
+tests/              # testes das regras e rotas
+```
 
 ## Como executar
 
