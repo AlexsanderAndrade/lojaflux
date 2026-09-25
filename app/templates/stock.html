@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Estoque | LojaFlux{% endblock %}
+{% block content %}
+<header class="page-heading">
+    <div><p class="eyebrow">RASTREABILIDADE</p><h1>Movimentações de estoque</h1><p>Cada entrada e saída permanece registrada com sua origem.</p></div>
+</header>
+
+<section class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">AUDITORIA</p><h2>Trilha de movimentações</h2></div><a href="{{ url_for('main.purchases') }}">Registrar entrada</a></div>
+    {% if movements %}
+        <div class="table-wrap"><table>
+            <thead><tr><th>Data</th><th>Produto</th><th>Operação</th><th>Variação</th><th>Saldo</th><th>Referência</th></tr></thead>
+            <tbody>{% for movement in movements %}<tr>
+                <td>{{ movement.occurred_at.strftime('%d/%m/%Y %H:%M') }}</td><td><strong>{{ movement.product.name }}</strong></td>
+                <td><span class="tag {{ movement.movement_type }}">{{ 'Compra' if movement.movement_type == 'purchase' else 'Venda' }}</span></td>
+                <td class="{{ 'positive-text' if movement.quantity_delta > 0 else 'negative-text' }}">{{ '+' if movement.quantity_delta > 0 else '' }}{{ movement.quantity_delta }}</td>
+                <td>{{ movement.stock_after }}</td><td>{{ movement.reference_type }} #{{ movement.reference_id }}</td>
+            </tr>{% endfor %}</tbody>
+        </table></div>
+    {% else %}
+        <div class="empty-state"><strong>Sem movimentações</strong><p>Compras e vendas alimentarão esta trilha automaticamente.</p></div>
+    {% endif %}
+</section>
+{% endblock %}
+

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Produtos | LojaFlux{% endblock %}
+{% block content %}
+<header class="page-heading">
+    <div><p class="eyebrow">CATÁLOGO</p><h1>Produtos</h1><p>Cadastre preços, custos e limites para acompanhar o estoque.</p></div>
+</header>
+
+<section class="split-layout">
+    <article class="panel form-panel">
+        <div class="panel-heading"><div><p class="eyebrow">NOVO ITEM</p><h2>Cadastrar produto</h2></div></div>
+        <form method="post" class="form-grid">
+            <label class="span-2">Nome<input name="name" required maxlength="120" placeholder="Ex.: Açaí 500 ml"></label>
+            <label>SKU<input name="sku" required maxlength="40" placeholder="ACAI-500"></label>
+            <label>Preço de venda<input name="price" required inputmode="decimal" placeholder="22,90"></label>
+            <label>Custo atual<input name="cost" required inputmode="decimal" placeholder="8,40"></label>
+            <label>Estoque inicial<input name="current_stock" type="number" min="0" value="0" required></label>
+            <label>Estoque mínimo<input name="minimum_stock" type="number" min="0" value="5" required></label>
+            <button class="button primary span-2" type="submit">Salvar produto</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">{{ products|length }} ITENS</p><h2>Catálogo atual</h2></div></div>
+        {% if products %}
+            <div class="product-list">
+                {% for product in products %}
+                    <div class="product-row">
+                        <div class="product-icon">{{ product.name[:1] }}</div>
+                        <div><strong>{{ product.name }}</strong><small>{{ product.sku }} · custo {{ product.cost_cents|money }}</small></div>
+                        <div class="product-price"><strong>{{ product.price_cents|money }}</strong><small>{{ product.current_stock }} un.</small></div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state compact"><strong>Nenhum produto cadastrado</strong><p>Use o formulário para começar.</p></div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
+

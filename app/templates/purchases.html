@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Compras | LojaFlux{% endblock %}
+{% block content %}
+<header class="page-heading">
+    <div><p class="eyebrow">ENTRADA DE MERCADORIA</p><h1>Compras</h1><p>Registre reposições e mantenha custo e estoque sincronizados.</p></div>
+</header>
+
+<section class="split-layout">
+    <article class="panel form-panel">
+        <div class="panel-heading"><div><p class="eyebrow">NOVA COMPRA</p><h2>Registrar entrada</h2></div></div>
+        <form method="post" class="form-grid">
+            <label class="span-2">Produto<select name="product_id" required><option value="">Selecione</option>{% for product in products %}<option value="{{ product.id }}">{{ product.name }} · estoque {{ product.current_stock }}</option>{% endfor %}</select></label>
+            <label>Quantidade<input name="quantity" type="number" min="1" required></label>
+            <label>Custo unitário<input name="unit_cost" inputmode="decimal" placeholder="8,40" required></label>
+            <label class="span-2">Fornecedor<input name="supplier" maxlength="120" placeholder="Nome do fornecedor" required></label>
+            <label class="span-2">Data e hora<input class="datetime-now" name="occurred_at" type="datetime-local" required></label>
+            <button class="button primary span-2" type="submit">Registrar compra</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading"><div><p class="eyebrow">HISTÓRICO</p><h2>Últimas compras</h2></div></div>
+        {% if purchases %}
+            <div class="timeline">
+                {% for purchase in purchases %}
+                    <div class="timeline-item">
+                        <span class="timeline-mark positive">+</span>
+                        <div><strong>{{ purchase.items[0].product_name }}</strong><small>{{ purchase.supplier }} · {{ purchase.occurred_at.strftime('%d/%m %H:%M') }}</small></div>
+                        <div class="timeline-value"><strong>{{ purchase.total_cents|money }}</strong><small>+{{ purchase.items[0].quantity }} un.</small></div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state compact"><strong>Nenhuma compra registrada</strong><p>As entradas aparecerão aqui.</p></div>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}
+

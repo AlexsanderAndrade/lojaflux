@@ -32,7 +32,34 @@ Quando compras, vendas e estoque são controlados separadamente, o responsável 
 
 Python 3.12, Flask, SQLAlchemy, SQLite, Jinja2, HTML, CSS, JavaScript e Pytest.
 
-## Estado
+## Como executar
 
-Em desenvolvimento ativo. A primeira entrega inclui fundação, banco de dados, regras de negócio, interface web responsiva e testes.
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m flask --app run.py seed-demo
+python run.py
+```
+
+Abra `http://127.0.0.1:5000`.
+
+Para executar os testes:
+
+```powershell
+pytest -q
+```
+
+## Endpoints de demonstração
+
+- `GET /api/health` — estado do serviço;
+- `GET /api/dashboard` — indicadores do dia e série dos últimos sete dias.
+
+## Próximos passos
+
+- cancelamentos por evento de estorno, preservando histórico;
+- fechamento diário de caixa e divisão por meios de pagamento;
+- previsão simples de demanda com dados históricos;
+- exportação de relatórios;
+- autenticação e perfis de acesso para uma futura versão em rede.
 

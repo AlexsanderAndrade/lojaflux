@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Visão geral | LojaFlux{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">RESUMO OPERACIONAL · {{ summary.day.strftime('%d/%m/%Y') }}</p>
+        <h1>Decisões mais rápidas começam com uma visão simples.</h1>
+        <p>Acompanhe as vendas do dia, a margem estimada e os produtos que precisam de atenção.</p>
+    </div>
+    <a class="button primary" href="{{ url_for('main.sales') }}">+ Registrar venda</a>
+</section>
+
+<section class="metric-grid" aria-label="Indicadores do dia">
+    <article class="metric-card accent">
+        <span>Faturamento hoje</span>
+        <strong>{{ summary.revenue_cents | money }}</strong>
+        <small>{{ summary.sales_count }} venda{{ '' if summary.sales_count == 1 else 's' }} concluída{{ '' if summary.sales_count == 1 else 's' }}</small>
+    </article>
+    <article class="metric-card">
+        <span>Lucro bruto estimado</span>
+        <strong>{{ summary.profit_cents | money }}</strong>
+        <small>Receita menos custo registrado</small>
+    </article>
+    <article class="metric-card">
+        <span>Ticket médio</span>
+        <strong>{{ summary.ticket_cents | money }}</strong>
+        <small>Média por venda do dia</small>
+    </article>
+    <article class="metric-card {{ 'warning' if summary.low_stock else '' }}">
+        <span>Estoque em atenção</span>
+        <strong>{{ summary.low_stock | length }}</strong>
+        <small>Produto{{ '' if summary.low_stock|length == 1 else 's' }} no limite mínimo</small>
+    </article>
+</section>
+
+<section class="dashboard-grid">
+    <article class="panel chart-panel">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">ÚLTIMOS 7 DIAS</p>
+                <h2>Faturamento diário</h2>
+            </div>
+            <span class="status-pill">Atualizado</span>
+        </div>
+        {% set max_revenue = summary.chart | map(attribute='revenue_cents') | max %}
+        <div class="bar-chart" role="img" aria-label="Gráfico do faturamento dos últimos sete dias">
+            {% for item in summary.chart %}
+                {% set height = ((item.revenue_cents / max_revenue) * 100) if max_revenue else 4 %}
+                <div class="bar-column" title="{{ item.label }}: {{ item.revenue_cents | money }}">
+                    <span class="bar-value">{{ item.revenue_cents | money }}</span>
+                    <div class="bar" style="height: {{ [height, 4] | max }}%"></div>
+                    <small>{{ item.label }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">AÇÃO RECOMENDADA</p>
+                <h2>Reposição de estoque</h2>
+            </div>
+            <a href="{{ url_for('main.stock') }}">Ver trilha</a>
+        </div>
+        {% if summary.low_stock %}
+            <div class="attention-list">
+                {% for product in summary.low_stock %}
+                    <div>
+                        <span class="product-dot"></span>
+                        <p><strong>{{ product.name }}</strong><small>{{ product.current_stock }} em estoque · mínimo {{ product.minimum_stock }}</small></p>
+                        <a href="{{ url_for('main.purchases') }}">Repor</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state compact">
+                <strong>Estoque saudável</strong>
+                <p>Nenhum produto atingiu o limite mínimo.</p>
+            </div>
+        {% endif %}
+    </article>
+</section>
+
+<section class="panel">
+    <div class="panel-heading">
+        <div>
+            <p class="eyebrow">MOVIMENTO DO DIA</p>
+            <h2>Vendas recentes</h2>
+        </div>
+        <a href="{{ url_for('main.sales') }}">Ver todas</a>
+    </div>
+    {% if summary.recent_sales %}
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Venda</th><th>Horário</th><th>Canal</th><th>Itens</th><th>Total</th></tr></thead>
+                <tbody>
+                {% for sale in summary.recent_sales %}
+                    <tr>
+                        <td><strong>#{{ sale.id }}</strong></td>
+                        <td>{{ sale.occurred_at.strftime('%H:%M') }}</td>
+                        <td><span class="tag">{{ {'store':'Loja','delivery':'Delivery','social':'Redes sociais'}[sale.channel] }}</span></td>
+                        <td>{{ sale.items | sum(attribute='quantity') }}</td>
+                        <td><strong>{{ sale.total_cents | money }}</strong></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <strong>O dia ainda não tem vendas</strong>
+            <p>Registre a primeira operação para acompanhar os indicadores.</p>
+            <a class="button secondary" href="{{ url_for('main.sales') }}">Registrar primeira venda</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+

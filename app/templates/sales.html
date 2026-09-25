@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Vendas | LojaFlux{% endblock %}
+{% block content %}
+<header class="page-heading">
+    <div><p class="eyebrow">FRENTE DE CAIXA</p><h1>Vendas</h1><p>Selecione os produtos; preço, custo e estoque serão registrados juntos.</p></div>
+</header>
+
+<section class="panel sale-entry">
+    <div class="panel-heading"><div><p class="eyebrow">NOVA OPERAÇÃO</p><h2>Registrar venda</h2></div><div class="sale-total"><small>Total estimado</small><strong id="sale-total">R$ 0,00</strong></div></div>
+    <form method="post" id="sale-form">
+        <div class="sale-settings">
+            <label>Canal<select name="channel"><option value="store">Loja</option><option value="delivery">Delivery</option><option value="social">Redes sociais</option></select></label>
+            <label>Data e hora<input class="datetime-now" name="occurred_at" type="datetime-local" required></label>
+        </div>
+        {% if products %}
+            <div class="selectable-products">
+                {% for product in products %}
+                    <label class="sale-product {{ 'low' if product.current_stock <= product.minimum_stock else '' }}">
+                        <span><strong>{{ product.name }}</strong><small>{{ product.price_cents|money }} · {{ product.current_stock }} disponíveis</small></span>
+                        <input class="sale-quantity" data-price="{{ product.price_cents }}" name="quantity_{{ product.id }}" type="number" min="0" max="{{ product.current_stock }}" value="0" aria-label="Quantidade de {{ product.name }}">
+                    </label>
+                {% endfor %}
+            </div>
+            <button class="button primary full" type="submit">Confirmar venda</button>
+        {% else %}
+            <div class="empty-state"><strong>Cadastre produtos antes de vender</strong><p>O catálogo ainda está vazio.</p><a class="button secondary" href="{{ url_for('main.products') }}">Ir para produtos</a></div>
+        {% endif %}
+    </form>
+</section>
+
+<section class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">REGISTROS RECENTES</p><h2>Histórico de vendas</h2></div></div>
+    {% if sales %}
+        <div class="table-wrap"><table>
+            <thead><tr><th>Venda</th><th>Data</th><th>Canal</th><th>Produtos</th><th>Lucro estimado</th><th>Total</th></tr></thead>
+            <tbody>{% for sale in sales %}<tr>
+                <td><strong>#{{ sale.id }}</strong></td><td>{{ sale.occurred_at.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td><span class="tag">{{ {'store':'Loja','delivery':'Delivery','social':'Redes sociais'}[sale.channel] }}</span></td>
+                <td>{% for item in sale.items %}<span class="line-item">{{ item.quantity }}× {{ item.product_name }}</span>{% endfor %}</td>
+                <td class="positive-text">{{ sale.estimated_profit_cents|money }}</td><td><strong>{{ sale.total_cents|money }}</strong></td>
+            </tr>{% endfor %}</tbody>
+        </table></div>
+    {% else %}
+        <div class="empty-state compact"><strong>Nenhuma venda registrada</strong><p>As operações concluídas aparecerão aqui.</p></div>
+    {% endif %}
+</section>
+{% endblock %}
+

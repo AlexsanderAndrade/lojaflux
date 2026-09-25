@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="LojaFlux: gestão simples de vendas, compras e estoque para pequenos comércios.">
+    <title>{% block title %}LojaFlux{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="{{ url_for('main.dashboard') }}" aria-label="LojaFlux - início">
+            <span class="brand-mark">LF</span>
+            <span><strong>LojaFlux</strong><small>Gestão inteligente</small></span>
+        </a>
+        <nav aria-label="Navegação principal">
+            <a class="{{ 'active' if request.path == '/' else '' }}" href="{{ url_for('main.dashboard') }}">Visão geral</a>
+            <a class="{{ 'active' if request.path.startswith('/sales') else '' }}" href="{{ url_for('main.sales') }}">Vendas</a>
+            <a class="{{ 'active' if request.path.startswith('/purchases') else '' }}" href="{{ url_for('main.purchases') }}">Compras</a>
+            <a class="{{ 'active' if request.path.startswith('/products') else '' }}" href="{{ url_for('main.products') }}">Produtos</a>
+            <a class="{{ 'active' if request.path.startswith('/stock') else '' }}" href="{{ url_for('main.stock') }}">Estoque</a>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <section class="flash-stack" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <span>Projeto de portfólio com dados fictícios</span>
+        <a href="{{ url_for('main.api_dashboard') }}">API do dashboard</a>
+    </footer>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</body>
+</html>
+
