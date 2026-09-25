@@ -11,7 +11,7 @@ def test_dashboard_renders_empty_state(client):
     assert "O dia ainda não tem vendas" in response.text
 
 
-def test_product_can_be_created_from_form(client):
+def test_product_can_be_created_from_form(client, app):
     response = client.post(
         "/products",
         data={
@@ -27,6 +27,13 @@ def test_product_can_be_created_from_form(client):
     assert response.status_code == 200
     assert "Produto cadastrado com sucesso" in response.text
     assert "Suco natural" in response.text
+    with app.app_context():
+        from app.models import StockMovement
+
+        movement = StockMovement.query.one()
+        assert movement.movement_type == "opening"
+        assert movement.quantity_delta == 7
+        assert movement.stock_after == 7
 
 
 def test_dashboard_api_has_stable_contract(client):

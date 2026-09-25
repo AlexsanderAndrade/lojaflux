@@ -66,6 +66,18 @@ def products():
             if product.current_stock < 0 or product.minimum_stock < 0:
                 raise DomainError("Os valores de estoque não podem ser negativos.")
             db.session.add(product)
+            db.session.flush()
+            if product.current_stock:
+                db.session.add(
+                    StockMovement(
+                        product_id=product.id,
+                        movement_type="opening",
+                        quantity_delta=product.current_stock,
+                        stock_after=product.current_stock,
+                        reference_type="product",
+                        reference_id=product.id,
+                    )
+                )
             db.session.commit()
             flash("Produto cadastrado com sucesso.", "success")
             return redirect(url_for("main.products"))

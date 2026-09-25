@@ -12,7 +12,7 @@
             <thead><tr><th>Data</th><th>Produto</th><th>Operação</th><th>Variação</th><th>Saldo</th><th>Referência</th></tr></thead>
             <tbody>{% for movement in movements %}<tr>
                 <td>{{ movement.occurred_at.strftime('%d/%m/%Y %H:%M') }}</td><td><strong>{{ movement.product.name }}</strong></td>
-                <td><span class="tag {{ movement.movement_type }}">{{ 'Compra' if movement.movement_type == 'purchase' else 'Venda' }}</span></td>
+                <td><span class="tag {{ movement.movement_type }}">{{ {'purchase':'Compra','sale':'Venda','opening':'Saldo inicial'}[movement.movement_type] }}</span></td>
                 <td class="{{ 'positive-text' if movement.quantity_delta > 0 else 'negative-text' }}">{{ '+' if movement.quantity_delta > 0 else '' }}{{ movement.quantity_delta }}</td>
                 <td>{{ movement.stock_after }}</td><td>{{ movement.reference_type }} #{{ movement.reference_id }}</td>
             </tr>{% endfor %}</tbody>
